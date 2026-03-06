@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Quarkus Extension Diagrams</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #f0f2f5;
+    font-family: 'Inter', sans-serif;
+    padding: 48px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .page-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  /* ── DIAGRAM CARD ── */
+  .diagram {
+    width: 860px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05);
+    overflow: hidden;
+  }
+
+  .diagram-header {
+    padding: 24px 32px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .diagram-header-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .diagram-header-title { font-size: 18px; font-weight: 700; color: #111; }
+  .diagram-header-sub   { font-size: 13px; color: #888; margin-top: 2px; }
+  .diagram-header-tag {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .diagram-body {
+    padding: 28px 32px 32px;
+  }
+
+  /* ── FLOW ROW ── */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* boxes */
+  .box {
+    flex: 1;
+    border-radius: 14px;
+    padding: 16px 14px;
+    text-align: center;
+    position: relative;
+  }
+  .box-icon { font-size: 26px; margin-bottom: 8px; line-height: 1; }
+  .box-title { font-size: 13px; font-weight: 700; color: #111; margin-bottom: 4px; line-height: 1.3; }
+  .box-sub   { font-size: 11px; color: #777; line-height: 1.45; }
+  .box-tag   {
+    display: inline-block; margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px; font-weight: 600;
+    padding: 3px 8px; border-radius: 4px;
+    line-height: 1.3;
+  }
+
+  /* arrow */
+  .arr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    flex-shrink: 0;
+    gap: 4px;
+  }
+  .arr svg { display: block; }
+  .arr-label { font-size: 9px; color: #aaa; text-align: center; font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
+
+  /* replaces badge */
+  .replaces-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 12px 16px;
+    background: #fafafa;
+    border-radius: 10px;
+    border: 1px solid #ebebeb;
+  }
+  .replaces-label {
+    font-size: 11px; font-weight: 600; color: #999;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    flex-shrink: 0;
+  }
+  .replaces-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .rtag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px; padding: 4px 10px;
+    border-radius: 5px;
+    font-weight: 500;
+  }
+  .rtag.old {
+    background: #fff0ef; color: #c94040;
+    border: 1px solid #f5c0c0;
+    text-decoration: line-through;
+    opacity: 0.85;
+  }
+  .rtag.new {
+    background: #f0faf0; color: #2a8a3a;
+    border: 1px solid #b8e0be;
+  }
+
+  /* ── COLOURS PER DIAGRAM ── */
+  /* JIB — amber */
+  .jib .diagram-header { background: #fffbf5; }
+  .jib .diagram-header-icon { background: #fff3e0; }
+  .jib .diagram-header-tag  { background: #fff3e0; color: #d07010; }
+  .jib .box-main { background: #fff8ec; border: 1.5px solid #fcd89a; }
+  .jib .box-out  { background: #f5fff5; border: 1.5px solid #a8dfb0; }
+  .jib .box-in   { background: #f7f7f7; border: 1.5px solid #e0e0e0; }
+  .jib .box-tag.amber { background: #fff3e0; color: #c47a10; }
+  .jib .box-tag.green { background: #e8f5e9; color: #2e7d32; }
+  .jib .arr svg path { stroke: #f0a040; }
+  .jib .arr-label { color: #c47a10; }
+
+  /* K8S — blue */
+  .k8s .diagram-header { background: #f5f8ff; }
+  .k8s .diagram-header-icon { background: #e8f0fe; }
+  .k8s .diagram-header-tag  { background: #e8f0fe; color: #1a5cd4; }
+  .k8s .box-main { background: #eef4ff; border: 1.5px solid #9fc2f7; }
+  .k8s .box-out  { background: #f5fff5; border: 1.5px solid #a8dfb0; }
+  .k8s .box-in   { background: #f7f7f7; border: 1.5px solid #e0e0e0; }
+  .k8s .box-tag.blue  { background: #e8f0fe; color: #1a5cd4; }
+  .k8s .box-tag.green { background: #e8f5e9; color: #2e7d32; }
+  .k8s .arr svg path { stroke: #4a9cf5; }
+  .k8s .arr-label { color: #1a5cd4; }
+
+  /* HELM — green */
+  .helm .diagram-header { background: #f5fcf4; }
+  .helm .diagram-header-icon { background: #e6f4e6; }
+  .helm .diagram-header-tag  { background: #e6f4e6; color: #1e7b1e; }
+  .helm .box-main { background: #f0faf0; border: 1.5px solid #8ed48e; }
+  .helm .box-out  { background: #f5f0ff; border: 1.5px solid #c4a8ef; }
+  .helm .box-in   { background: #f7f7f7; border: 1.5px solid #e0e0e0; }
+  .helm .box-tag.teal  { background: #e6f4e6; color: #1e7b1e; }
+  .helm .box-tag.purple{ background: #f3ecff; color: #6a2eb8; }
+  .helm .arr svg path { stroke: #5cb85c; }
+  .helm .arr-label { color: #1e7b1e; }
+
+  /* separator text */
+  .sep {
+    font-size: 11px; font-weight: 600; color: #bbb;
+    text-align: center; letter-spacing: 0.06em;
+    margin-bottom: -8px;
+    align-self: flex-start;
+    padding-top: 4px;
+  }
+
+  /* ── NOTES ROW ── */
+  .notes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .note {
+    background: #fafafa;
+    border: 1px solid #ebebeb;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .note-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .note-text { font-size: 12px; color: #555; line-height: 1.55; }
+  .note-text strong { color: #222; }
+</style>
+</head>
+<body>
+
+<div class="page-title">Quarkus Extension Diagrams — Copy & Paste into Confluence</div>
+
+<!-- ══════════════════════════════════════
+     DIAGRAM 1 · QUARKUS-JIB
+══════════════════════════════════════ -->
+<div class="diagram jib">
+  <div class="diagram-header">
+    <div class="diagram-header-icon">🐳</div>
+    <div>
+      <div class="diagram-header-title">quarkus-jib</div>
+      <div class="diagram-header-sub">Container image builder — no Docker daemon required</div>
+    </div>
+    <div class="diagram-header-tag">BUILD TIME</div>
+  </div>
+
+  <div class="diagram-body">
+    <div class="flow">
+
+      <!-- INPUT -->
+      <div class="box box-in">
+        <div class="box-icon">📄</div>
+        <div class="box-title">application<br/>.properties</div>
+        <div class="box-sub">Image name, tag,<br/>registry, base image,<br/>credentials</div>
+        <span class="box-tag amber">config</span>
+      </div>
+
+      <div class="arr">
+        <svg width="40" height="16" viewBox="0 0 40 16"><path d="M2 8 H34 M26 2 L38 8 L26 14" stroke="#f0a040" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="arr-label">mvn package</div>
+      </div>
+
+      <!-- EXTENSION -->
+      <div class="box box-main">
+        <div class="box-icon">⚙️</div>
+        <div class="box-title">quarkus-jib</div>
+        <div class="box-sub">Reads classpath,<br/>builds layered OCI<br/>image in memory</div>
+        <span class="box-tag amber">extension</span>
+      </div>
+
+      <div class="arr">
+        <svg width="40" height="16" viewBox="0 0 40 16"><path d="M2 8 H34 M26 2 L38 8 L26 14" stroke="#f0a040" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="arr-label">push (optional)</div>
+      </div>
+
+      <!-- IMAGE -->
+      <div class="box box-out">
+        <div class="box-icon">📦</div>
+        <div class="box-title">OCI Image<br/>in Registry</div>
+        <div class="box-sub">registry.io/team/<br/>app:1.0.0</div>
+        <span class="box-tag green">output</span>
+      </div>
+
+      <div class="arr">
+        <svg width="40" height="16" viewBox="0 0 40 16"><path d="M2 8 H34 M26 2 L38 8 L26 14" stroke="#f0a040" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="arr-label">pulled by</div>
+      </div>
+
+      <!-- POD -->
+      <div class="box box-in">
+        <div class="box-icon">🚀</div>
+        <div class="box-title">Kubernetes<br/>Pod</div>
+        <div class="box-sub">Runs the Quarkus<br/>container at<br/>port 8080</div>
+        <span class="box-tag amber">runtime</span>
+      </div>
+
+    </div>
+
+    <!-- REPLACES -->
+    <div class="replaces-row">
+      <span class="replaces-label">Replaces</span>
+      <div class="replaces-tags">
+        <span class="rtag old">Dockerfile</span>
+        <span class="rtag old">docker build</span>
+        <span class="rtag old">docker push</span>
+        <span class="rtag old">.dockerignore</span>
+        <span class="rtag new">✓ No Docker daemon needed</span>
+        <span class="rtag new">✓ Layered cache (faster pushes)</span>
+      </div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="notes">
+      <div class="note">
+        <div class="note-icon">🔑</div>
+        <div class="note-text"><strong>Opt-in activation:</strong> Image is only built when <code style="font-family:'JetBrains Mono',monospace;font-size:10.5px;background:#f0f0f0;padding:1px 4px;border-radius:3px;">-Dquarkus.container-image.build=true</code> is passed or set in a Maven profile.</div>
+      </div>
+      <div class="note">
+        <div class="note-icon">🔒</div>
+        <div class="note-text"><strong>Security:</strong> Never commit <code style="font-family:'JetBrains Mono',monospace;font-size:10.5px;background:#f0f0f0;padding:1px 4px;border-radius:3px;">username</code> / <code style="font-family:'JetBrains Mono',monospace;font-size:10.5px;background:#f0f0f0;padding:1px 4px;border-radius:3px;">password</code> to source. Use env vars or CI secrets instead.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     DIAGRAM 2 · QUARKUS-KUBERNETES
+══════════════════════════════════════ -->
+<div class="diagram k8s">
+  <div class="diagram-header">
+    <div class="diagram-header-icon">☸️</div>
+    <div>
+      <div class="diagram-header-title">quarkus-kubernetes</div>
+      <div class="diagram-header-sub">Kubernetes manifest generator — derived from your build</div>
+    </div>
+    <div class="diagram-header-tag">BUILD TIME</div>
+  </div>
+
+  <div class="diagram-body">
+    <div class="flow">
+
+      <!-- INPUT -->
+      <div class="box box-in">
+        <div class="box-icon">📄</div>
+        <div class="box-title">application<br/>.properties</div>
+        <div class="box-sub">Replicas, service type,<br/>resource limits,<br/>probes, env vars</div>
+        <span class="box-tag blue">config</span>
+      </div>
+
+      <div class="arr">
+        <svg width="40" height="16" viewBox="0 0 40 16"><path d="M2 8 H34 M26 2 L38 8 L26 14" stroke="#4a9cf5" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="arr-label">mvn package</div>
+      </div>
+
+      <!-- EXTENSION -->
+      <div class="box box-main">
+        <div class="box-icon">⚙️</div>
+        <div class="box-title">quarkus-<br/>kubernetes</div>
+        <div class="box-sub">Generates manifest<br/>YAML from properties<br/>at build time</div>
+        <span class="box-tag blue">extension</span>
+      </div>
+
+      <div class="arr">
+        <svg width="40" height="16" viewBox="0 0 40 16"><path d="M2 8 H34 M26 2 L38 8 L26 14" stroke="#4a9cf5" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="arr-label">writes to</div>
+      </div>
+
+      <!-- MANIFEST -->
+      <div class="box box-out">
+        <div class="box-icon">📋</div>
+        <div class="box-title">kubernetes.yml<br/><span style="font-weight:400;color:#888">target/kubernetes/</span></div>
+        <div class="box-sub">Deployment · Service<br/>Ingress · ConfigMap<br/>all in one file</div>
+        <span class="box-tag green">output</span>
+      </div>
+
+      <div class="arr">
+        <svg width="40" height="16" viewBox="0 0 40 16"><path d="M2 8 H34 M26 2 L38 8 L26 14" stroke="#4a9cf5" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="arr-label">kubectl apply</div>
+      </div>
+
+      <!-- CLUSTER -->
+      <div class="box box-in">
+        <div class="box-icon">🌐</div>
+        <div class="box-title">Kubernetes<br/>Cluster</div>
+        <div class="box-sub">Resources created<br/>or updated<br/>in the namespace</div>
+        <span class="box-tag blue">runtime</span>
+      </div>
+
+    </div>
+
+    <!-- REPLACES -->
+    <div class="replaces-row">
+      <span class="replaces-label">Replaces</span>
+      <div class="replaces-tags">
+        <span class="rtag old">k8s/deployment.yaml</span>
+        <span class="rtag old">k8s/service.yaml</span>
+        <span class="rtag old">k8s/ingress.yaml</span>
+        <span class="rtag old">kustomize base/</span>
+        <span class="rtag new">✓ Manifests always in sync with code</span>
+        <span class="rtag new">✓ No YAML drift</span>
+      </div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="notes">
+      <div class="note">
+        <div class="note-icon">📁</div>
+        <div class="note-text"><strong>Output location:</strong> <code style="font-family:'JetBrains Mono',monospace;font-size:10.5px;background:#f0f0f0;padding:1px 4px;border-radius:3px;">target/kubernetes/kubernetes.yml</code> — gitignored by default. Add a CI step to apply or feed into Helm.</div>
+      </div>
+      <div class="note">
+        <div class="note-icon">🔄</div>
+        <div class="note-text"><strong>OpenShift:</strong> Set <code style="font-family:'JetBrains Mono',monospace;font-size:10.5px;background:#f0f0f0;padding:1px 4px;border-radius:3px;">deployment-target=openshift</code> to generate <em>DeploymentConfig</em> and <em>Route</em> resources instead.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     DIAGRAM 3 · QUARKUS-HELM
+══════════════════════════════════════ -->
+<div class="diagram helm">
+  <div class="diagram-header">
+    <div class="diagram-header-icon">⛵</div>
+    <div>
+      <div class="diagram-header-title">quarkus-helm</div>
+      <div class="diagram-header-sub">Helm chart generator — wraps manifests into a versioned, deployable chart</div>
+    </div>
+    <div class="diagram-header-tag">BUILD TIME</div>
+  </div>
+
+  <div class="diagram-body">
+    <div class="flow">
+
+      <!-- INPUT -->
+      <div class="box box-in">
+        <div class="box-icon">📋</div>
+        <div class="box-title">kubernetes.yml<br/><span style="font-weight:400;color:#888">from quarkus-k8s</span></div>
+        <div class="box-sub">Raw Kubernetes<br/>manifests from the<br/>previous extension</div>
+        <span class="box-tag teal">input</span>
+      </div>
+
+      <div class="arr">
+        <svg width="40" height="16" viewBox="0 0 40 16"><path d="M2 8 H34 M26 2 L38 8 L26 14" stroke="#5cb85c" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="arr-label">mvn package</div>
+      </div>
+
+      <!-- EXTENSION -->
+      <div class="box box-main">
+        <div class="box-icon">⚙️</div>
+        <div class="box-title">quarkus-helm</div>
+        <div class="box-sub">Splits YAML into<br/>templates, generates<br/>Chart.yaml + values.yaml</div>
+        <span class="box-tag teal">extension</span>
+      </div>
+
+      <div class="arr">
+        <svg width="40" height="16" viewBox="0 0 40 16"><path d="M2 8 H34 M26 2 L38 8 L26 14" stroke="#5cb85c" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="arr-label">writes to</div>
+      </div>
+
+      <!-- CHART -->
+      <div class="box box-out">
+        <div class="box-icon">📦</div>
+        <div class="box-title">Helm Chart<br/><span style="font-weight:400;color:#888">target/helm/</span></div>
+        <div class="box-sub">Chart.yaml<br/>values.yaml<br/>templates/</div>
+        <span class="box-tag teal">output</span>
+      </div>
+
+      <div class="arr">
+        <svg width="40" height="16" viewBox="0 0 40 16"><path d="M2 8 H34 M26 2 L38 8 L26 14" stroke="#5cb85c" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="arr-label">helm upgrade</div>
+      </div>
+
+      <!-- CLUSTER -->
+      <div class="box box-in">
+        <div class="box-icon">🌐</div>
+        <div class="box-title">Kubernetes<br/>Cluster</div>
+        <div class="box-sub">Values override<br/>per environment<br/>at deploy time</div>
+        <span class="box-tag purple">runtime</span>
+      </div>
+
+    </div>
+
+    <!-- REPLACES -->
+    <div class="replaces-row">
+      <span class="replaces-label">Replaces</span>
+      <div class="replaces-tags">
+        <span class="rtag old">Chart.yaml</span>
+        <span class="rtag old">values.yaml</span>
+        <span class="rtag old">templates/deployment.yaml</span>
+        <span class="rtag old">templates/service.yaml</span>
+        <span class="rtag old">templates/ingress.yaml</span>
+        <span class="rtag new">✓ Chart always in sync with build</span>
+      </div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="notes">
+      <div class="note">
+        <div class="note-icon">⚠️</div>
+        <div class="note-text"><strong>values.yaml is regenerated every build.</strong> Do NOT edit it manually — changes will be overwritten. Store per-environment overrides in a separate <code style="font-family:'JetBrains Mono',monospace;font-size:10.5px;background:#f0f0f0;padding:1px 4px;border-radius:3px;">deploy/values-prod.yaml</code> file.</div>
+      </div>
+      <div class="note">
+        <div class="note-icon">🔁</div>
+        <div class="note-text"><strong>GitOps ready:</strong> Publish the chart to an OCI registry after build. ArgoCD and Flux can deploy directly from the chart version — no manual YAML maintenance needed.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
